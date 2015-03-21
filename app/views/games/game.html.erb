@@ -1,0 +1,18 @@
+<%= content_for :head do %>
+  <%= stylesheet_link_tag 'board' %>
+<% end %>
+<div id="game-info">
+  <h1>
+    Welcome to Connect Four, <span class="player-<%= @current_player %>">Player <%= @current_player %></span>
+  </h1>
+</div>
+<div id="current-turn">
+  <h3>
+    Current turn for: <span class="player-<%= @player_turn %>">Player <%= @player_turn %></span>
+  </h3>
+</div>
+<%= render partial: 'board' %>
+
+<script type="text/javascript">
+  Board.init();
+</script>

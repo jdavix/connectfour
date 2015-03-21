@@ -1,6 +1,6 @@
 WebsocketRails::EventMap.describe do
   namespace :game_syncs do
-    subscribe :move_game, :to => GameSyncController, :with_method => :move_game
+    subscribe :move_game, :to => GameSyncsController, :with_method => :move_game
   end
 
 
