@@ -62,7 +62,10 @@
     // }
     $(boardData).each(function(columnIndex, rows) {
       $(rows).each(function(rowIndex, playerNumber) {
-        $(".row-"+rowIndex+" .col-"+columnIndex).addClass("player-"+playerNumber)
+        $(".row-"+rowIndex+" .col-"+columnIndex).removeClass("player-0");
+        $(".row-"+rowIndex+" .col-"+columnIndex).removeClass("player-1");
+        $(".row-"+rowIndex+" .col-"+columnIndex).removeClass("player-2");
+        $(".row-"+rowIndex+" .col-"+columnIndex).addClass("player-"+playerNumber);
       });
     });
   }
