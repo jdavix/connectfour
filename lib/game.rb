@@ -8,6 +8,7 @@ class Game
   attr_accessor :last_move_column
   attr_accessor :winner
   attr_accessor :game_state
+  attr_accessor :last_turn
 
   @@game = Game.new
 
@@ -28,6 +29,8 @@ class Game
 
     return @game_state if  @game_state["over"] == true
 
+    @last_turn = movement["player"].to_s
+
     movement_index = movement["column"].to_i - 1
 
     if @columns[ movement_index  ].size <  ROWS
@@ -38,7 +41,9 @@ class Game
       if winner?
         @game_state = { "over" => true, "state" => "winner", "winner" => @winner }
       else
-        @game_state = { "over" => false, "state" => "playing" }
+        @game_state = { "over" => false, 
+                        "state" => "playing", 
+                        "current_turn" => current_turn }
       end
     elsif is_it_a_draw?
       @game_state = { "over" => true, "state" => "draw" }
@@ -48,15 +53,9 @@ class Game
     return @game_state
   end
 
-  def count(x, y, horiz, vert, player)
-    new_x = x
-    new_x = x + 1 if horiz == :right
-    new_x = x - 1 if horiz == :left
-    new_y = y
-    new_y = y + 1 if vert == :up
-    new_y = y - 1 if vert == :down
-    return 0 if new_x < 0 || new_x > 6 || new_y > 7 || new_y < 0 || @grid[new_x.to_s][new_y.to_s].to_s != player
-    return 1 + count(new_x, new_y, horiz, vert, player)
+  def current_turn
+    return @last_turn if @last_turn.nil?
+    @last_turn == "1" ? "2" : "1"
   end
 
   #note: to determine the winner I have saved some time looking an existing 
@@ -84,6 +83,17 @@ class Game
     return nil
   end
 
+  def count(x, y, horiz, vert, player)
+    new_x = x
+    new_x = x + 1 if horiz == :right
+    new_x = x - 1 if horiz == :left
+    new_y = y
+    new_y = y + 1 if vert == :up
+    new_y = y - 1 if vert == :down
+    return 0 if new_x < 0 || new_x > 6 || new_y > 7 || new_y < 0 || @grid[new_x.to_s][new_y.to_s].to_s != player
+    return 1 + count(new_x, new_y, horiz, vert, player)
+  end
+
   def is_it_a_draw?
     attempts = 0
     @columns.each{ |column|  attempts+= column.size}
@@ -95,10 +105,12 @@ class Game
       @columns = JSON.parse($redis.get("game_columns"))
       @grid    = JSON.parse($redis.get("game_grid"))
       @game_state = JSON.parse($redis.get("game_state"))
+      @last_turn  = $redis.get("game_last_turn")
     else
       start_grid()
       start_columns()
       @game_state = {}
+      @last_turn = nil
     end
   end
 
@@ -141,5 +153,6 @@ class Game
       $redis.set( "game_columns", JSON.generate(@columns) )
       $redis.set( "game_grid", JSON.generate(@grid) )
       $redis.set( "game_state", JSON.generate(@game_state) )
+      $redis.set( "game_last_turn", @last_turn )
     end
 end

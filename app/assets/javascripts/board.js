@@ -15,7 +15,6 @@
   };
 
   Board.doMove = function (player, column_number) {
-    console.log("move in column: "+column_number+" from player "+player)
 
     var move = {
                  player: player,
@@ -24,9 +23,9 @@
 
     var success = function(move) { console.log("Created move "); }
 
-    var failure = function(move) {
-      console.log("Failed to create move")
-      console.log(move)
+    var failure = function(response) {
+        alert(response);
+
     }
 
     dispatcher.trigger('game_syncs.move_game', move, success, failure);
@@ -68,8 +67,6 @@
   }
 
   function _updateBoard(boardData) {
-    console.log("updating board")
-    console.log(boardData)
     $.each(boardData, function(row, columns) {
       $.each(columns, function(column, playerNumber) {
 
@@ -83,9 +80,7 @@
   }
 
   function _updateGameState(gameResult) {
-    console.log(gameResult)
     if ( gameResult.over == true ) {
-      console.log("game is over")
       if ( gameResult.state == "winner" ) {
         alert("Hey!, Player "+gameResult.winner+" is the winner!");
       } else {
@@ -93,6 +88,11 @@
           alert("it is a Draw") ; 
         }
       }
+    } else {
+      console.log("current turn:");
+      console.log(gameResult.current_turn) ;
+      current_turn = gameResult.current_turn ;
+      $("#current_turn").html("Player "+current_turn);
     }
   }
 
