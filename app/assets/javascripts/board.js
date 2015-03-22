@@ -35,7 +35,8 @@
   // Private methods
   function _addUpdateBoardBinding(){
     channel.bind('update_board', function(data) {
-      _updateBoard(data)
+      _updateBoard(data.grid);
+      _updateGameState(data.game_result);
     });
     _updateBoard($.parseJSON($("#last_board").val()));
   };
@@ -79,6 +80,20 @@
         $( "#row-"+(row)+" .col-"+(column)).addClass("player-"+playerNumber);
       });
     });
+  }
+
+  function _updateGameState(gameResult) {
+    console.log(gameResult)
+    if ( gameResult.over == true ) {
+      console.log("game is over")
+      if ( gameResult.state == "winner" ) {
+        alert("Hey!, Player "+gameResult.winner+" is the winner!");
+      } else {
+        if ( gameResult.state =="draw") {
+          alert("it is a Draw") ; 
+        }
+      }
+    }
   }
 
   function _loadPlayer() {

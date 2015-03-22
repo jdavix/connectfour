@@ -11,4 +11,9 @@ class GamesController < ApplicationController
     render :game
   end
 
+  def restart
+    Game.current.restart
+    redirect_to root_path
+  end
+
 end

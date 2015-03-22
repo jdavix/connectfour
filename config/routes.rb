@@ -7,7 +7,8 @@ Rails.application.routes.draw do
 
   resources :games, only: :index do
     collection do
-      get ':id', to: 'games#player'
+      get 'restart', to: "games#restart"
+      get ':id', to: 'games#player', as: :board
     end
   end
 end

@@ -16,7 +16,9 @@
 <%= hidden_field_tag "last_board", @last_board %>
 
 <%= render partial: 'board' %>
+<br><br><br>
 
+<%= link_to "Restart Game!", restart_games_path%>
 <script type="text/javascript">
   Board.init();
 </script>
