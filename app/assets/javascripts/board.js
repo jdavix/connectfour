@@ -1,93 +1,89 @@
 (function( Board, $ ) {
   // Private variables
-  var board = '#board';
+  var board      = '#board';
   var dispatcher = new WebSocketRails('localhost:3000/websocket');
-  var channel = dispatcher.subscribe('players');
+  var channel    = dispatcher.subscribe('players');
   
+  Board.current_player = null;
+
+
+  // Public methods
+  Board.init = function(){
+    _loadPlayer();
+    _addColumnBindings();
+    _addUpdateBoardBinding();
+  };
+
+  Board.doMove = function (player, column_number) {
+    console.log("move in column: "+column_number+" from player "+player)
+
+    var move = {
+                 player: player,
+                 column:  column_number
+               }
+
+    var success = function(move) { console.log("Created move "); }
+
+    var failure = function(move) {
+      console.log("Failed to create move")
+      console.log(move)
+    }
+
+    dispatcher.trigger('game_syncs.move_game', move, success, failure);
+  }
+
   // Private methods
   function _addUpdateBoardBinding(){
     channel.bind('update_board', function(data) {
       _updateBoard(data)
     });
+    _updateBoard($.parseJSON($("#last_board").val()));
   };
 
   function _addColumnBindings() {
+    
     // Add triggers to HTML using jquery, so they can be clickable
     $(board).find('.col-1').on('click', function(e) {
-      Board.doMove(1);
+      Board.doMove(Board.current_player, 1);
     });
     $(board).find('.col-2').on('click', function(e) {
-      Board.doMove(2);
+      Board.doMove(Board.current_player, 2);
     });
     $(board).find('.col-3').on('click', function(e) {
-      Board.doMove(3);
+      Board.doMove(Board.current_player, 3);
     });
     $(board).find('.col-4').on('click', function(e) {
-      Board.doMove(4);
+      Board.doMove(Board.current_player, 4);
     });
     $(board).find('.col-5').on('click', function(e) {
-      Board.doMove(5);
+      Board.doMove(Board.current_player, 5);
     });
     $(board).find('.col-6').on('click', function(e) {
-      Board.doMove(6);
+      Board.doMove(Board.current_player, 6);
     });
     $(board).find('.col-7').on('click', function(e) {
-      Board.doMove(7);
+      Board.doMove(Board.current_player, 7);
     });
   }
 
-  // TODO: Test Board update
   function _updateBoard(boardData) {
-    // boardData is expected to be a JSON object like:
-    // {
-    //   "1": {
-    //     "1": 0,
-    //     "2": 1,
-    //     "3": 2,
-    //     "4": 1,
-    //     ...
-    //     "RowNumber": PlayerNumber,
-    //   },
-    //   "2": {
-    //     "1": 0,
-    //     "2": 1,
-    //     "3": 2,
-    //     ...
-    //     "RowNumber": PlayerNumber,
-    //   },
-    //   ...
-    //   "ColumnNumber": {
-    //      ...
-    //   }
-    // }
-    $(boardData).each(function(columnIndex, rows) {
-      $(rows).each(function(rowIndex, playerNumber) {
-        $(".row-"+rowIndex+" .col-"+columnIndex).removeClass("player-0");
-        $(".row-"+rowIndex+" .col-"+columnIndex).removeClass("player-1");
-        $(".row-"+rowIndex+" .col-"+columnIndex).removeClass("player-2");
-        $(".row-"+rowIndex+" .col-"+columnIndex).addClass("player-"+playerNumber);
+    console.log("updating board")
+    console.log(boardData)
+    $.each(boardData, function(row, columns) {
+      $.each(columns, function(column, playerNumber) {
+
+        $( "#row-"+(row)+" .col-"+(column)).removeClass("player-0");
+        $( "#row-"+(row)+" .col-"+(column)).removeClass("player-1");
+        $( "#row-"+(row)+" .col-"+(column)).removeClass("player-2");
+
+        $( "#row-"+(row)+" .col-"+(column)).addClass("player-"+playerNumber);
       });
     });
   }
 
-  // Public variables
-  Board.variable = 1;
-  
-  // Public methods
-  Board.init = function(){
-    _addColumnBindings();
-    _addUpdateBoardBinding();
-  };
-
-  Board.doMove = function (column_number) {
-    console.log("Request for move in column: "+column_number)
-    var move = "this is test"
-
-    var success = function(move) { console.log("Created move "); }
-    var failure = function(move) {
-      console.log("Failed to create move")
-    }
-
-    dispatcher.trigger('game_syncs.move_game', move, success, failure);
+  function _loadPlayer() {
+    Board.current_player = $("#player_id").val();
   }
+
+
 }( window.Board = window.Board || {}, jQuery ));

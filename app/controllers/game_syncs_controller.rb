@@ -1,11 +1,12 @@
 class GameSyncsController < WebsocketRails::BaseController
-  def initialize_session
-  end
 
   def move_game
-    puts "Calling move_game"
-    # send_message :move_game_success, { "message" => "movement received" }, :namespace => :game_syncs
-    WebsocketRails[:players].trigger(:update_board, "this is from server")
+    puts "Calling move_game -> #{message.inspect}"
+
+    Game.current.play(message)
+
+    WebsocketRails[:players].trigger(:update_board, Game.current.grid )
+
     trigger_success message
   end
 

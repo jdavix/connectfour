@@ -1,9 +1,14 @@
 $player_1_color: #A00;
 $player_2_color: #FFE944;
+$player_0_color: #CCC;
+
+.player-0{
+  background: $player_0_color;
+}
 
 .player-1{
-  color: $player_1_color;
+  background: $player_1_color;
 }
 .player-2{
-  color: $player_2_color;
+  background: $player_2_color;
 }

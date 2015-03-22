@@ -7,10 +7,14 @@
   </h1>
 </div>
 <div id="current-turn">
-  <h3>
+<!--   <h3>
     Current turn for: <span class="player-<%= @player_turn %>">Player <%= @player_turn %></span>
-  </h3>
+  </h3> -->
 </div>
+
+<%= hidden_field_tag "player_id", @current_player %>
+<%= hidden_field_tag "last_board", @last_board %>
+
 <%= render partial: 'board' %>
 
 <script type="text/javascript">
